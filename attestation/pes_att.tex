@@ -13,12 +13,33 @@
 \section{Exercise}
 Given is the following boost converter: 
 
-\[ V_O = \SI{200}{\volt} \]
+\[ V_o = \SI{200}{\volt} \]
 \[ L = \SI{200}{\micro\henry} \]
 \[ C = \SI{5}{\micro\farad} \]
 \[ R = \SI{50}{\ohm} \]
 \[ f_s = \SI{100}{\kilo\hertz} \]
 
 \section{Solution}
+Volt second balance: 
+\[ V_{L_1} \cdot D + V_{L_2} \cdot (1 - D) = 0 \]
+\[ V_{L_1} = V_i \qquad V_{L_2} = V_i - V_o \]
+\[ \to V_i \cdot D + (V_i - V_o) \cdot (1 - D) = 0 \]
+\[ V_i \cdot D + V_i \cdot (1 - D) - V_o \cdot (1 - D) = 0 \]
+\[ V_i \cdot \underbrace{(D + 1 - D)}_{1} = V_o \cdot (1 - D) \]
+\[ V_o = \dfrac{V_i}{1 - D} \]
+%\[ M(D) = \dfrac{V_o}{V_i} = \dfrac{1}{1 - D} \]
+\[ D = 1 - \frac{V_i}{V_o} \]
+\begin{table}[h!]
+\centering
+\begin{zebratabular}{lll}
+\rowcolor{gray}
+$V_i$ [\si{\volt}]  & $V_o$ [\si{\volt}]    & $D$ [\,]\\
+ 50 & 200   & 0.75  \\
+100 & 200   & 0.5   \\
+150 & 200   & 0.25  \\
+\end{zebratabular}
+\caption{Duty cycle depending on input voltage}
+\label{tab:duty}
+\end{table}
 
 \end{document}
