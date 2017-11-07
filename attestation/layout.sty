@@ -15,6 +15,7 @@
 % Seiteneinstellungen
     \usepackage{lscape}         % Einzelne Seiten im Querformat
     \usepackage{pdflscape}      % Einzelne Seiten im Querformat (bessere Lesbarkeit)
+    \setlength\parindent{0pt}   % Keine Einrückung
 
 % Farben
     \usepackage{color}          % Farben
@@ -329,15 +330,3 @@
 
     %\fancyhead[R]{\includegraphics[scale=0.25]{../fig/hslu_logo2.PNG}}
 
-% Partstyle
-\usepackage{titlesec}
-
-\titleclass{\part}{top} % make part like a chapter
-\titleformat{\part}[display]
-{\normalfont\Huge\bfseries}
-{\vspace{3pt}\titlerule[2pt]\vspace{3pt}\MakeUppercase{\partname} \thepart}
-{0pt}
-{\titlerule[2pt]\vspace{1pc}\huge}
-[\thispagestyle{fancy}]
-%
-\titlespacing*{\part}{0pt}{0pt}{20pt}
