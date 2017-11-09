@@ -7,7 +7,7 @@ close all;
 pkg load control
 
 % Detailed analysis
-detail = 0;
+detail = 1;
 
 % Boost converter parameters
 vo = 200;
@@ -22,7 +22,7 @@ else
 end
 
 % Define internal variables
-s = tf("s");
+s = tf('s');
 
 % Calculate static duty ratio
 d = 1 - (vi / vo);
@@ -32,14 +32,14 @@ ccm = d < 2 * (vo * l * fs)./(r * vi);
 
 if detail
     figure(1);
-    plot(vi, d, "b", "LineWidth", 3, vi, 2 * (vo * l * fs)./(r * vi), "r", "LineWidth", 3);
+    plot(vi, d, 'b', 'LineWidth', 3, vi, 2 * (vo * l * fs)./(r * vi), 'r', 'LineWidth', 3);
     grid on;
-    title("CCM analysis");
-    legend("Duty ratio", "Limit for CCM");
-    xlabel("V_i [V]");
-    ylabel("d [ ]");
+    title('CCM analysis');
+    legend('Duty ratio', 'Limit for CCM');
+    xlabel('V_i [V]');
+    ylabel('d [ ]');
     ylim([0 5]);
 else
-    disp(["Duty ratios at different input voltages:"]);
+    disp(['Duty ratios at different input voltages:']);
     disp(num2str([vi; d; ccm]'))
 end
