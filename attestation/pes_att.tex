@@ -49,7 +49,7 @@ second balance.
 \[ V_i \cdot \underbrace{(D + 1 - D)}_{1} = V_o \cdot (1 - D) \]
 %\[ V_o = \dfrac{V_i}{1 - D} \]
 %\[ M(D) = \dfrac{V_o}{V_i} = \dfrac{1}{1 - D} \]
-\[ \underline{D = 1 - \frac{V_i}{V_o}} \]
+\[ \underline{D = 1 - \dfrac{V_i}{V_o}} \]
 
 \begin{table}[h!]
     \centering
@@ -64,14 +64,27 @@ second balance.
     \label{tab:duty}
 \end{table}
 
+\begin{figure}[h!]
+    \centering
+    \missingfigure{CCM plot}
+    \caption{CCM analysis over complete input voltage range}
+    \label{fig_ccm}
+\end{figure}
+
 For each input voltage it is checked, if the converter is still in continuous 
 conduction mode (CCM). 
 \[ \Delta I_L < 2 \cdot I_o \]
 \[ \dfrac{V_i \cdot D}{L \cdot f_s} < 2 \cdot \dfrac{V_o}{R} \]
 \[ D < 2 \cdot \dfrac{V_o \cdot L \cdot f_s}{R \cdot V_i} \]
 
-\begin{figure}[h!]
-    \begin{minipage}[c]{0.49\textwidth}
+To determine the transfer function of the converter state-space-averaging is used. The State variables are the inductor current $i_L$ and the output capacitor voltage $v_c$. 
+\[ X = \left[\begin{array}{c}i_L\\v_c\end{array}\right] \]
+The output voltage is equal to the capacitor voltage. 
+\[ F = \left[\begin{array}{cc}0 & 1\end{array}\right] \]
+\[ v_o = F \cdot X \]
+
+\begin{multicols}{2}
+    \subsubsection*{Interval 1:}
         \begin{circuitikz}[scale=0.9, european voltages, european resistors, american inductors]
             \draw (0,0)
             to[V, v<=$V_i$]         +( 0, 2)
@@ -88,8 +101,35 @@ conduction mode (CCM).
             (7.5,2) to[open, v^>=$V_0$] (7.5,0)
             ;
         \end{circuitikz}
-    \end{minipage}
-    \begin{minipage}[c]{0.49\textwidth}
+    \[ \dfrac{di_L}{dt} = \dfrac{v_L}{L} = \dfrac{v_i}{L} \]
+    \[ \dfrac{dv_C}{dt} = \dfrac{i_C}{C} = \dfrac{-i_o}{C} = \dfrac{-v_c}{R \cdot C} \]
+    \[ \underbrace{\left[
+        \begin{array}{c}
+            \dfrac{di_L}{dt} \\
+            \dfrac{dv_C}{dt}
+        \end{array}\right]}_{\dot{x}} 
+    = 
+        \underbrace{\left[
+        \begin{array}{cc}
+            0 & 0 \\
+            0 & \dfrac{-1}{R \cdot C}
+        \end{array}\right]}_{A_1} 
+    \cdot
+        \underbrace{\left[
+        \begin{array}{c}
+            i_L \\
+            v_C
+        \end{array}\right]}_{x} 
+    +
+        \underbrace{\left[
+        \begin{array}{c}
+            \dfrac{v_i}{L} \\
+            0
+        \end{array}\right]}_{B_1} 
+    \]
+    \[ \dot{x} = A_1 \cdot x + B_1 \]
+\columnbreak
+    \subsubsection*{Interval 2:}
         \begin{circuitikz}[scale=0.9, european voltages, european resistors, american inductors]
             \draw (0,0)
             to[V, v<=$V_i$]         +( 0, 2)
@@ -105,7 +145,97 @@ conduction mode (CCM).
             (7.5,2) to[open, v^>=$V_0$] (7.5,0)
             ;
         \end{circuitikz}
-    \end{minipage}
-\end{figure}
+    \[ \dfrac{di_L}{dt} = \dfrac{v_L}{L} = \dfrac{v_i - v_c}{L} \]
+    \[ \dfrac{dv_C}{dt} = \dfrac{i_C}{C} = \dfrac{i_L - i_o}{C} = \dfrac{i_L}{C} - \dfrac{v_c}{R \cdot C} \]
+    \[ \underbrace{\left[
+        \begin{array}{c}
+            \dfrac{di_L}{dt} \\
+            \dfrac{dv_C}{dt}
+        \end{array}\right]}_{\dot{x}} 
+    = 
+        \underbrace{\left[
+        \begin{array}{cc}
+            0 & \dfrac{-1}{L} \\
+            \dfrac{1}{C} & \dfrac{-1}{R \cdot C}
+        \end{array}\right]}_{A_2} 
+    \cdot
+        \underbrace{\left[
+        \begin{array}{c}
+            i_L \\
+            v_C
+        \end{array}\right]}_{x} 
+    +
+        \underbrace{\left[
+        \begin{array}{c}
+            \dfrac{v_i}{L} \\
+            0
+        \end{array}\right]}_{B_2} 
+    \]
+    \[ \dot{x} = A_2 \cdot x + B_2 \]
+\end{multicols}
+
+\[ D' = 1 - D \qquad D + D' = 1 \]
+\[ A = A_1 \cdot D + A_2 \cdot D'
+     = \left[\begin{array}{cc}
+            0 & 0 \\
+            0 & \dfrac{-1}{R \cdot C}
+        \end{array}\right]
+     \cdot D
+     + \left[\begin{array}{cc}
+            0 & \dfrac{-1}{L} \\
+            \dfrac{1}{C} & \dfrac{-1}{R \cdot C}
+        \end{array}\right]
+     \cdot D'
+     = \left[\begin{array}{cc}
+            0 & \dfrac{-D'}{L} \\
+            \dfrac{D'}{C} & \dfrac{-1}{R \cdot C}
+        \end{array}\right]
+     = \left[\begin{array}{cc}
+            0 & \dfrac{D-1}{L} \\
+            \dfrac{1-D}{C} & \dfrac{-1}{R \cdot C}
+        \end{array}\right]
+\]
+\[ B = B_1 \cdot D + B_2 \cdot D'
+     = \left[\begin{array}{c}
+            \dfrac{v_i}{L} \\
+            0
+        \end{array}\right]
+     \cdot D 
+     + \left[\begin{array}{c}
+            \dfrac{v_i}{L} \\
+            0
+        \end{array}\right]
+     \cdot D'
+     = \left[\begin{array}{c}
+            \dfrac{v_i}{L} \\
+            0
+        \end{array}\right]
+\]
+\[ X = \left[\begin{array}{c}i_L\\v_c\end{array}\right] = -A^{-1} \cdot B 
+     = -\left[\begin{array}{cc}
+            \dfrac{-L}{(D - 1)^2 \cdot R} & \dfrac{-C}{D - 1} \\
+            \dfrac{L}{D-1} & 0
+        \end{array}\right] \cdot B
+     = \left[\begin{array}{c}
+            \dfrac{v_i}{(D - 1)^2 \cdot R} \\
+            \dfrac{-v_i}{D-1}
+        \end{array}\right]
+\]
+\[ E = (A_1 - A_2) \cdot X + B_1 - B_2
+     = \left[\begin{array}{c}
+            \dfrac{v_c}{L} \\
+            \dfrac{-i_l}{C}
+        \end{array}\right]
+\]
+\[ H(s) = \dfrac{\hat{V}_o(s)}{\hat{D}(s)} = F \cdot (s \cdot I - A)^{-1} \cdot E
+    = \dfrac{\dfrac{v_C}{1 - D} - \dfrac{L \cdot i_L}{(1 - D)^2} \cdot s}
+        {1 + \dfrac{L}{R \cdot (1 - D)^2} \cdot s + \dfrac{C \cdot L}{(1 - D)^2} \cdot s^2}
+\]
+\[ v_C = v_o \qquad i_L = \dfrac{v_o}{(1 - D) \cdot R} \]
+\[ H(s) = \dfrac{\dfrac{v_o}{1 - D} - \dfrac{L \cdot v_o}{(1 - D)^3 \cdot R} \cdot s}
+        {1 + \dfrac{L}{R \cdot (1 - D)^2} \cdot s + \dfrac{C \cdot L}{(1 - D)^2} \cdot s^2}
+    = \dfrac{v_o}{1 - D} \cdot \dfrac{1 - \dfrac{L}{(1 - D)^2 \cdot R} \cdot s}
+        {1 + \dfrac{L}{R \cdot (1 - D)^2} \cdot s + \dfrac{C \cdot L}{(1 - D)^2} \cdot s^2}
+\]
 
 \end{document}
