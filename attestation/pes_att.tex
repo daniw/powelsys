@@ -78,9 +78,9 @@ conduction mode (CCM).
 \[ D < 2 \cdot \dfrac{V_o \cdot L \cdot f_s}{R \cdot V_i} \]
 
 To determine the transfer function of the converter state-space-averaging is used. The State variables are the inductor current $i_L$ and the output capacitor voltage $v_c$. 
-\[ X = \left[\begin{array}{c}i_L\\v_c\end{array}\right] \]
+\[ X = \begin{bmatrix}i_L\\v_c\end{bmatrix} \]
 The output voltage is equal to the capacitor voltage. 
-\[ F = \left[\begin{array}{cc}0 & 1\end{array}\right] \]
+\[ F = \begin{bmatrix}0 & 1\end{bmatrix} \]
 \[ v_o = F \cdot X \]
 
 \begin{multicols}{2}
@@ -103,29 +103,29 @@ The output voltage is equal to the capacitor voltage.
         \end{circuitikz}
     \[ \dfrac{di_L}{dt} = \dfrac{v_L}{L} = \dfrac{v_i}{L} \]
     \[ \dfrac{dv_C}{dt} = \dfrac{i_C}{C} = \dfrac{-i_o}{C} = \dfrac{-v_c}{R \cdot C} \]
-    \[ \underbrace{\left[
-        \begin{array}{c}
+    \[ \underbrace{
+        \begin{bmatrix}
             \dfrac{di_L}{dt} \\
             \dfrac{dv_C}{dt}
-        \end{array}\right]}_{\dot{x}} 
+        \end{bmatrix}}_{\dot{x}} 
     = 
-        \underbrace{\left[
-        \begin{array}{cc}
+        \underbrace{
+        \begin{bmatrix}
             0 & 0 \\
             0 & \dfrac{-1}{R \cdot C}
-        \end{array}\right]}_{A_1} 
+        \end{bmatrix}}_{A_1} 
     \cdot
-        \underbrace{\left[
-        \begin{array}{c}
+        \underbrace{
+        \begin{bmatrix}
             i_L \\
             v_C
-        \end{array}\right]}_{x} 
+        \end{bmatrix}}_{x} 
     +
-        \underbrace{\left[
-        \begin{array}{c}
+        \underbrace{
+        \begin{bmatrix}
             \dfrac{v_i}{L} \\
             0
-        \end{array}\right]}_{B_1} 
+        \end{bmatrix}}_{B_1} 
     \]
     \[ \dot{x} = A_1 \cdot x + B_1 \]
 \columnbreak
@@ -147,85 +147,85 @@ The output voltage is equal to the capacitor voltage.
         \end{circuitikz}
     \[ \dfrac{di_L}{dt} = \dfrac{v_L}{L} = \dfrac{v_i - v_c}{L} \]
     \[ \dfrac{dv_C}{dt} = \dfrac{i_C}{C} = \dfrac{i_L - i_o}{C} = \dfrac{i_L}{C} - \dfrac{v_c}{R \cdot C} \]
-    \[ \underbrace{\left[
-        \begin{array}{c}
+    \[ \underbrace{
+        \begin{bmatrix}
             \dfrac{di_L}{dt} \\
             \dfrac{dv_C}{dt}
-        \end{array}\right]}_{\dot{x}} 
+        \end{bmatrix}}_{\dot{x}} 
     = 
-        \underbrace{\left[
-        \begin{array}{cc}
+        \underbrace{
+        \begin{bmatrix}
             0 & \dfrac{-1}{L} \\
             \dfrac{1}{C} & \dfrac{-1}{R \cdot C}
-        \end{array}\right]}_{A_2} 
+        \end{bmatrix}}_{A_2} 
     \cdot
-        \underbrace{\left[
-        \begin{array}{c}
+        \underbrace{
+        \begin{bmatrix}
             i_L \\
             v_C
-        \end{array}\right]}_{x} 
+        \end{bmatrix}}_{x} 
     +
-        \underbrace{\left[
-        \begin{array}{c}
+        \underbrace{
+        \begin{bmatrix}
             \dfrac{v_i}{L} \\
             0
-        \end{array}\right]}_{B_2} 
+        \end{bmatrix}}_{B_2} 
     \]
     \[ \dot{x} = A_2 \cdot x + B_2 \]
 \end{multicols}
 
 \[ D' = 1 - D \qquad D + D' = 1 \]
 \[ A = A_1 \cdot D + A_2 \cdot D'
-     = \left[\begin{array}{cc}
+     = \begin{bmatrix}
             0 & 0 \\
             0 & \dfrac{-1}{R \cdot C}
-        \end{array}\right]
+        \end{bmatrix}
      \cdot D
-     + \left[\begin{array}{cc}
+     + \begin{bmatrix}
             0 & \dfrac{-1}{L} \\
             \dfrac{1}{C} & \dfrac{-1}{R \cdot C}
-        \end{array}\right]
+        \end{bmatrix}
      \cdot D'
-     = \left[\begin{array}{cc}
+     = \begin{bmatrix}
             0 & \dfrac{-D'}{L} \\
             \dfrac{D'}{C} & \dfrac{-1}{R \cdot C}
-        \end{array}\right]
-     = \left[\begin{array}{cc}
+        \end{bmatrix}
+     = \begin{bmatrix}
             0 & \dfrac{D-1}{L} \\
             \dfrac{1-D}{C} & \dfrac{-1}{R \cdot C}
-        \end{array}\right]
+        \end{bmatrix}
 \]
 \[ B = B_1 \cdot D + B_2 \cdot D'
-     = \left[\begin{array}{c}
+     = \begin{bmatrix}
             \dfrac{v_i}{L} \\
             0
-        \end{array}\right]
+        \end{bmatrix}
      \cdot D 
-     + \left[\begin{array}{c}
+     + \begin{bmatrix}
             \dfrac{v_i}{L} \\
             0
-        \end{array}\right]
+        \end{bmatrix}
      \cdot D'
-     = \left[\begin{array}{c}
+     = \begin{bmatrix}
             \dfrac{v_i}{L} \\
             0
-        \end{array}\right]
+        \end{bmatrix}
 \]
-\[ X = \left[\begin{array}{c}i_L\\v_c\end{array}\right] = -A^{-1} \cdot B 
-     = -\left[\begin{array}{cc}
+\[ X = \begin{bmatrix}i_L\\v_c\end{bmatrix} = -A^{-1} \cdot B 
+     = -\begin{bmatrix}
             \dfrac{-L}{(D - 1)^2 \cdot R} & \dfrac{-C}{D - 1} \\
             \dfrac{L}{D-1} & 0
-        \end{array}\right] \cdot B
-     = \left[\begin{array}{c}
+        \end{bmatrix} \cdot B
+     = \begin{bmatrix}
             \dfrac{v_i}{(D - 1)^2 \cdot R} \\
             \dfrac{-v_i}{D-1}
-        \end{array}\right]
+        \end{bmatrix}
 \]
 \[ E = (A_1 - A_2) \cdot X + B_1 - B_2
-     = \left[\begin{array}{c}
+     = \begin{bmatrix}
             \dfrac{v_c}{L} \\
             \dfrac{-i_l}{C}
-        \end{array}\right]
+        \end{bmatrix}
 \]
 \[ H(s) = \dfrac{\hat{V}_o(s)}{\hat{D}(s)} = F \cdot (s \cdot I - A)^{-1} \cdot E
     = \dfrac{\dfrac{v_C}{1 - D} - \dfrac{L \cdot i_L}{(1 - D)^2} \cdot s}
