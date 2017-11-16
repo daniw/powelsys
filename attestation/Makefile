@@ -1,6 +1,16 @@
-.PHONY: all build vim clean
+.PHONY: all generate fig build vim clean
 
-all: build
+all:  build
+
+generate:
+	octave pes_att.m
+
+fig:
+	for file in fig/*;\
+	do\
+		echo $$file;\
+		pdfcrop $$file $$file;\
+	done
 
 build: 
 	mkdir -p obj
