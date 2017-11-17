@@ -12,7 +12,7 @@ s = tf('s');
 
 % Define plot and print output
 plotout = 1;
-printout = 1;
+printout = 0;
 
 %% Boost converter parameters
 vo = 200;
@@ -61,5 +61,20 @@ if plotout
     ylim([0 3]);
     if printout
         print -dpdf fig/ccm.pdf
+    end
+end
+
+% Transfer functions of converter
+h1 = (vo) / (1-d(1)) * (1 - (l / ((1 - d(1))^2 * r)) * s) / (1 + (l / ((1 - d(1))^2 * r)) * s + ((c * l) / (1-d(1))^2) * s^2);
+h2 = (vo) / (1-d(2)) * (1 - (l / ((1 - d(2))^2 * r)) * s) / (1 + (l / ((1 - d(2))^2 * r)) * s + ((c * l) / (1-d(2))^2) * s^2);
+h3 = (vo) / (1-d(3)) * (1 - (l / ((1 - d(3))^2 * r)) * s) / (1 + (l / ((1 - d(3))^2 * r)) * s + ((c * l) / (1-d(3))^2) * s^2);
+
+% Plot transfer functions
+if plotout
+    figure(2);
+    bode(h1, h2, h3);
+    legend(['D = ' num2str(d(1))], ['D = ' num2str(d(2))], ['D = ' num2str(d(3))]);
+    if printout
+        print -dpdf fig/h.pdf
     end
 end
