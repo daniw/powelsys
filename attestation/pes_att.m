@@ -12,7 +12,7 @@ s = tf('s');
 
 % Define plot and print output
 plotout = 1;
-printout = 0;
+printout = 1;
 
 %% Boost converter parameters
 vo = 200;
@@ -78,3 +78,64 @@ if plotout
         print -dpdf fig/h.pdf
     end
 end
+
+% Controller
+kp = 0.000012;
+kp = 0.000009;
+wi = 200e3;
+g_pi1 = kp * (1 + wi / s);
+kp = 0.0000065;
+wi = 300e3;
+g_pi = kp * (1 + wi / s);
+
+kp = 1;
+wi = 1e3;
+wt = 10e3;
+g_pit1 = kp * ((1 + wi / s) / (1 + s / wt));
+
+kp = 0.03;
+wi1 = 3e3;
+wi2 = 10e3;
+wt1 = 60e3;
+wt2 = 100e3;
+g_pit2 = kp * (((1 + wi1 / s) * (1 + s / wi2)) / ((1 + s / wt1) * (1 + s / wt2)));
+
+% Plot transfer functions
+if plotout
+    figure(3);
+    bode(g_pi, g_pit1, g_pit2);
+    legend('PI', 'PIT1', 'PIT2');
+    if printout
+        print -dpdf fig/h.pdf
+    end
+end
+
+% Plot transfer functions
+if plotout
+    figure(4);
+    bode(g_pi*h1, g_pi*h2, g_pi*h3);
+    legend(['D = ' num2str(d(1))], ['D = ' num2str(d(2))], ['D = ' num2str(d(3))]);
+    %line([100 1e7], [-(180-60) -(180-60)], 'Color', 'r', 'LineWidth', 2);
+    %line([fs*pi fs*pi], [0 -400], 'Color', 'r', 'LineWidth', 2);
+    if printout
+        print -dpdf fig/bode_pi.pdf
+    end
+end
+
+% Plot step response
+if plotout
+    figure(5);
+    step(g_pi*h1/(1 + g_pi*h1), g_pi*h2/(1 + g_pi*h2), g_pi*h3/(1 + g_pi*h3), g_pi1*h1/(1 + g_pi1*h1), g_pi1*h2/(1 + g_pi1*h2), g_pi1*h3/(1 + g_pi1*h3));
+    legend(['D = ' num2str(d(1))], ['D = ' num2str(d(2))], ['D = ' num2str(d(3))]);
+    if printout
+        print -dpdf fig/step_pi.pdf
+    end
+end
+
+%figure()
+%bode(g_pi, h1, h2, h3, g_pi*h1)
+%%bode(g_pit2, h1, h2, h3, g_pit2*h1)
+%line([fs*pi fs*pi], [0 -400], 'Color', 'r', 'LineWidth', 2);
+%line([100 1e7], [-(180-60) -(180-60)], 'Color', 'r', 'LineWidth', 2);
+%figure()
+%step(g_pi*h1/(1 + g_pi*h1));
