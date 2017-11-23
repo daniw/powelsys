@@ -6,12 +6,47 @@
 \author{Daniel Winz}
 \date{\today}
 
-%\includeonly{}
+\newcommand{\magmin}{0.000001}
+\newcommand{\magmax}{10000}
+\newcommand{\freqmin}{1000}
+\newcommand{\freqmax}{1000000}
+\newcommand{\angmin}{-360}
+\newcommand{\angmax}{0}
+
+\pgfplotsset{
+    width=\linewidth,
+    grid=minor,
+    grid style={dashed,gray!30},
+    every axis plot/.append style={ thick},
+}
 
 \begin{document}
 
 \section{Exercise}
 Given is the following boost converter: 
+
+\begin{wrapfigure}{r}{0.7\textwidth}
+    \centering
+    \begin{circuitikz}[european voltages, european resistors, american inductors]
+        \draw (0,0)
+        to[V, v<=$V_i$]         +( 0, 2)
+        to[short, i>^=$I_i$]    +( 1, 0)
+        to[L=L, -*]             +( 2, 0)
+        to[D, l=D, -*]          +( 2, 0)
+        to[short, i>^=$I_o$]    +( 2, 0)
+        to[R=R]                 +( 0,-2)
+        to[short, -*]           +(-2, 0)
+        to[short, -*]           +(-2, 0)
+        to[short]               +(-3, 0)
+        (5, 2) to[C=C]          (5,0)
+        (3,1) node[nigfete=Q] (fet) {}
+        (fet) node[right] {Q}
+        (fet.S) to[short] (3,0)
+        (fet.D) to[short] (3,2)
+        (7.5,2) to[open, v^>=$V_0$] (7.5,0)
+        ;
+    \end{circuitikz}
+\end{wrapfigure}
 
 \[ V_o = \SI{200}{\volt} \]
 \[ L = \SI{200}{\micro\henry} \]
@@ -19,27 +54,20 @@ Given is the following boost converter:
 \[ R = \SI{50}{\ohm} \]
 \[ f_s = \SI{100}{\kilo\hertz} \]
 
-\begin{circuitikz}[european voltages, european resistors, american inductors]
-    \draw (0,0)
-    to[V, v<=$V_i$]         +( 0, 2)
-    to[short, i>^=$I_i$]    +( 1, 0)
-    to[L=L, -*]             +( 2, 0)
-    to[D, l=D, -*]          +( 2, 0)
-    to[short, i>^=$I_o$]    +( 2, 0)
-    to[R=R]                 +( 0,-2)
-    to[short, -*]           +(-2, 0)
-    to[short, -*]           +(-2, 0)
-    to[short]               +(-3, 0)
-    (5, 2) to[C=C]          (5,0)
-    (3,1) node[nigfete=Q] (fet) {}
-    (fet) node[right] {Q}
-    (fet.S) to[short] (3,0)
-    (fet.D) to[short] (3,2)
-    (7.5,2) to[open, v^>=$V_0$] (7.5,0)
-    ;
-\end{circuitikz}
-
 \section{Solution}
+%\begin{table}[h!]
+\begin{wraptable}{r}{0.25\textwidth}
+    \centering
+    \begin{zebratabular}{lll}
+        \rowcolor{gray}
+        $V_i$ [\si{\volt}]  & $V_o$ [\si{\volt}]    & $D$ [\,]\\
+         50 & 200   & 0.75  \\
+        100 & 200   & 0.5   \\
+        150 & 200   & 0.25  \\
+    \end{zebratabular}
+    \caption{Duty cycle for several input voltages}
+    \label{tab:duty}
+\end{wraptable}
 The duty ratio for different input voltages is calculated using the volt 
 second balance. 
 \[ V_{L_1} \cdot D + V_{L_2} \cdot (1 - D) = 0 \]
@@ -51,25 +79,36 @@ second balance.
 %\[ M(D) = \dfrac{V_o}{V_i} = \dfrac{1}{1 - D} \]
 \[ \underline{D = 1 - \dfrac{V_i}{V_o}} \]
 
-\begin{table}[h!]
+%\begin{figure}[h!]
+\begin{wrapfigure}{r}{0.5\textwidth}
     \centering
-    \begin{zebratabular}{lll}
-        \rowcolor{gray}
-        $V_i$ [\si{\volt}]  & $V_o$ [\si{\volt}]    & $D$ [\,]\\
-         50 & 200   & 0.75  \\
-        100 & 200   & 0.5   \\
-        150 & 200   & 0.25  \\
-    \end{zebratabular}
-    \caption{Duty cycle for several input voltages}
-    \label{tab:duty}
-\end{table}
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{fig/ccm.pdf}
+    %\includegraphics[width=0.8\textwidth]{fig/ccm.pdf}
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.5\textwidth,
+            title=\textbf{CCM Analysis},
+            xlabel={$V_i$ [\si{\volt}]},
+            ylabel={$d$},
+            grid=major,
+            ymin=0,
+            ymax=2,
+            restrict y to domain=0:10,
+            xmin=0,
+            xmax=200,
+            ]
+            \addplot+[mark=none] table[x=vi, y=d, col sep=comma, blue]{data/ccm.csv};
+            \addlegendentry{Duty ratio};
+            \addplot+[mark=none] table[x=vi, y=dmax, col sep=comma, red]{data/ccm.csv};
+            \addlegendentry{Limit for CCM};
+            %\addplot+[mark=none] table[x=vi, y=ccm, col sep=comma, green]{data/ccm.csv};
+            %\addlegendentry{1=CCM, 0=DCM};
+            %\draw[] (axis cs: 20,0.5) -- (axis cs: 80,0.5);
+        \end{axis}
+    \end{tikzpicture}
     \caption{CCM analysis over complete input voltage range}
     \label{fig_ccm}
-\end{figure}
+\end{wrapfigure}
+%\end{figure}
 
 For each input voltage it is checked, if the converter is still in continuous 
 conduction mode (CCM). 
@@ -173,7 +212,7 @@ The output voltage is equal to the capacitor voltage.
     \]
     \[ \dot{x} = A_2 \cdot x + B_2 \]
 \end{multicols}
-
+\vspace{-1cm}
 \[ D' = 1 - D \qquad D + D' = 1 \]
 \[ A = A_1 \cdot D + A_2 \cdot D'
      = \begin{bmatrix}
@@ -237,5 +276,196 @@ The output voltage is equal to the capacitor voltage.
     = \dfrac{v_o}{1 - D} \cdot \dfrac{1 - \dfrac{L}{(1 - D)^2 \cdot R} \cdot s}
         {1 + \dfrac{L}{R \cdot (1 - D)^2} \cdot s + \dfrac{C \cdot L}{(1 - D)^2} \cdot s^2}
 \]
+
+\begin{figure}[h!]
+    \begin{subfigure}[b]{0.9\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode=log,
+                ymode=log,
+                height=0.45\textwidth,
+                title=\textbf{Magnitude},
+                xlabel={$\omega [\si{\per\second}]$},
+                ylabel={$d$},
+                ymin=\magmin,
+                ymax=\magmax,
+                xmin=\freqmin,
+                xmax=\freqmax,
+                ]
+                \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_h1.csv};
+                \addlegendentry{$D = 0.75$};
+                \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_h2.csv};
+                \addlegendentry{$D = 0.5$};
+                \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_h3.csv};
+                \addlegendentry{$D = 0.25$};
+                %\draw[] (axis cs: 20,0.5) -- (axis cs: 80,0.5);
+            \end{axis}
+        \end{tikzpicture}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.9\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode=log,
+                ymode=linear,
+                height=0.45\textwidth,
+                title=\textbf{Phase},
+                xlabel={$\omega [\si{\per\second}]$},
+                ylabel={$d$},
+                ymin=\angmin,
+                ymax=\angmax,
+                xmin=\freqmin,
+                xmax=\freqmax,
+                ]
+                \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_h1.csv};
+                \addlegendentry{$D = 0.75$};
+                \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_h2.csv};
+                \addlegendentry{$D = 0.5$};
+                \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_h3.csv};
+                \addlegendentry{$D = 0.25$};
+                \draw[red, dashed, thick] (axis cs: 1000,-120) -- (axis cs: 1000000,-120);
+            \end{axis}
+        \end{tikzpicture}
+    \end{subfigure}
+    \caption{Magnitude and phase of converter}
+    \label{fig:bode_h}
+\end{figure}
+
+\begin{figure}[h!]
+    \begin{subfigure}[b]{0.9\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode=log,
+                ymode=log,
+                height=0.45\textwidth,
+                title=\textbf{Magnitude},
+                xlabel={$\omega [\si{\per\second}]$},
+                ylabel={$d$},
+                ymin=\magmin,
+                ymax=\magmax,
+                xmin=\freqmin,
+                xmax=\freqmax,
+                ]
+                \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_g.csv};
+                %\addlegendentry{$D = 0.75$};
+                %\addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_h2.csv};
+                %\addlegendentry{$D = 0.5$};
+                %\addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_h3.csv};
+                %\addlegendentry{$D = 0.25$};
+                %\draw[] (axis cs: 20,0.5) -- (axis cs: 80,0.5);
+            \end{axis}
+        \end{tikzpicture}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.9\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode=log,
+                ymode=linear,
+                height=0.45\textwidth,
+                title=\textbf{Phase},
+                xlabel={$\omega [\si{\per\second}]$},
+                ylabel={$d$},
+                ymin=\angmin,
+                ymax=\angmax,
+                xmin=\freqmin,
+                xmax=\freqmax,
+                ]
+                \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_g.csv};
+                %\addlegendentry{$D = 0.75$};
+                %\addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_h2.csv};
+                %\addlegendentry{$D = 0.5$};
+                %\addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_h3.csv};
+                %\addlegendentry{$D = 0.25$};
+                %\draw[red, dashed, thick] (axis cs: 1000,-120) -- (axis cs: 1000000,-120);
+            \end{axis}
+        \end{tikzpicture}
+    \end{subfigure}
+    \caption{Magnitude and phase of controller}
+    \label{fig:bode_g}
+\end{figure}
+
+\begin{figure}[h!]
+    \begin{subfigure}[b]{0.9\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode=log,
+                ymode=log,
+                height=0.45\textwidth,
+                title=\textbf{Magnitude},
+                xlabel={$\omega [\si{\per\second}]$},
+                ylabel={$d$},
+                ymin=\magmin,
+                ymax=\magmax,
+                xmin=\freqmin,
+                xmax=\freqmax,
+                ]
+                \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_gh1.csv};
+                \addlegendentry{$D = 0.75$};
+                \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_gh2.csv};
+                \addlegendentry{$D = 0.5$};
+                \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_gh3.csv};
+                \addlegendentry{$D = 0.25$};
+                %\draw[] (axis cs: 20,0.5) -- (axis cs: 80,0.5);
+            \end{axis}
+        \end{tikzpicture}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.9\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode=log,
+                ymode=linear,
+                height=0.45\textwidth,
+                title=\textbf{Phase},
+                xlabel={$\omega [\si{\per\second}]$},
+                ylabel={$d$},
+                ymin=\angmin,
+                ymax=\angmax,
+                xmin=\freqmin,
+                xmax=\freqmax,
+                ]
+                \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_gh1.csv};
+                \addlegendentry{$D = 0.75$};
+                \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_gh2.csv};
+                \addlegendentry{$D = 0.5$};
+                \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_gh3.csv};
+                \addlegendentry{$D = 0.25$};
+                \draw[red, dashed, thick] (axis cs: 1000,-120) -- (axis cs: 1000000,-120);
+            \end{axis}
+        \end{tikzpicture}
+    \end{subfigure}
+    \caption{Magnitude and phase of open loop system}
+    \label{fig:bode_gh}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            title=\textbf{Step response},
+            xlabel={$t [\si{\milli\second}]$},
+            ylabel={$d$},
+            grid=major,
+            ymin=-0.02,
+            ymax=1.02,
+            xmin=0,
+            xmax=10,
+            ]
+            \addplot+[mark=none] table[x=t, y=y, col sep=comma]{data/step_gh1.csv};
+            \addlegendentry{$D = 0.75$};
+            \addplot+[mark=none] table[x=t, y=y, col sep=comma]{data/step_gh2.csv};
+            \addlegendentry{$D = 0.5$};
+            \addplot+[mark=none] table[x=t, y=y, col sep=comma]{data/step_gh3.csv};
+            \addlegendentry{$D = 0.25$};
+            %\draw[red, dashed, thick] (axis cs: 1000,-120) -- (axis cs: 1000000,-120);
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Step response of closed loop system}
+    \label{fig:step_gh}
+\end{figure}
 
 \end{document}

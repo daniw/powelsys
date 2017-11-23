@@ -9,10 +9,15 @@ pkg load control
 
 % Define internal variables
 s = tf('s');
+f = logspace(3, 6, 1000);
+t_step = 0:1e-5:10e-3;
 
 % Define plot and print output
-plotout = 1;
-printout = 1;
+plotout = 0;
+printout = 0;
+csvout = 1;
+datapath = 'data/';
+fileending = '.csv';
 
 %% Boost converter parameters
 vo = 200;
@@ -63,6 +68,15 @@ if plotout
         print -dpdf fig/ccm.pdf
     end
 end
+if csvout
+    filename = 'ccm';
+    fid = fopen([datapath, filename, fileending], 'wt');
+    fprintf(fid, 'vi, d, dmax, ccm\n');
+    fprintf(fid, '%.1f,%.6f,%.6f,%.0f\n', [vi_plot; d_plot; d_max_plot; ccm_plot]);
+    fclose(fid);
+    %fprintf(fid, 'magnitude, phase, angfreq\n');
+    %fprintf(fig, '%.6f,%.6f,%.0f\n', []);
+end
 
 % Transfer functions of converter
 h1 = (vo) / (1-d(1)) * (1 - (l / ((1 - d(1))^2 * r)) * s) / (1 + (l / ((1 - d(1))^2 * r)) * s + ((c * l) / (1-d(1))^2) * s^2);
@@ -78,36 +92,64 @@ if plotout
         print -dpdf fig/h.pdf
     end
 end
+if csvout
+    [magnitude_h1, phase_h1, angfreq_h1] = bode(h1, f);
+    [magnitude_h2, phase_h2, angfreq_h2] = bode(h2, f);
+    [magnitude_h3, phase_h3, angfreq_h3] = bode(h3, f);
+    filename = 'bode_h1';
+    fid = fopen([datapath, filename, fileending], 'wt');
+    fprintf(fid, 'magnitude, phase, angfreq\n');
+    fprintf(fid, '%.6f,%.6f,%.6f\n', [magnitude_h1, phase_h1, angfreq_h1']');
+    fclose(fid);
+    filename = 'bode_h2';
+    fid = fopen([datapath, filename, fileending], 'wt');
+    fprintf(fid, 'magnitude, phase, angfreq\n');
+    fprintf(fid, '%.6f,%.6f,%.6f\n', [magnitude_h2, phase_h2, angfreq_h2']');
+    fclose(fid);
+    filename = 'bode_h3';
+    fid = fopen([datapath, filename, fileending], 'wt');
+    fprintf(fid, 'magnitude, phase, angfreq\n');
+    fprintf(fid, '%.6f,%.6f,%.6f\n', [magnitude_h3, phase_h3, angfreq_h3']');
+    fclose(fid);
+end
 
 % Controller
-kp = 0.000012;
-kp = 0.000009;
+kp = 9e-6;
 wi = 200e3;
-g_pi1 = kp * (1 + wi / s);
-kp = 0.0000065;
-wi = 300e3;
 g_pi = kp * (1 + wi / s);
+%kp = 6.5e-6;
+%wi = 300e3;
+%g_pi1 = kp * (1 + wi / s);
 
-kp = 1;
-wi = 1e3;
-wt = 10e3;
-g_pit1 = kp * ((1 + wi / s) / (1 + s / wt));
-
-kp = 0.03;
-wi1 = 3e3;
-wi2 = 10e3;
-wt1 = 60e3;
-wt2 = 100e3;
-g_pit2 = kp * (((1 + wi1 / s) * (1 + s / wi2)) / ((1 + s / wt1) * (1 + s / wt2)));
+%kp = 1;
+%wi = 1e3;
+%wt = 10e3;
+%g_pit1 = kp * ((1 + wi / s) / (1 + s / wt));
+%
+%kp = 0.03;
+%wi1 = 3e3;
+%wi2 = 10e3;
+%wt1 = 60e3;
+%wt2 = 100e3;
+%g_pit2 = kp * (((1 + wi1 / s) * (1 + s / wi2)) / ((1 + s / wt1) * (1 + s / wt2)));
 
 % Plot transfer functions
 if plotout
     figure(3);
-    bode(g_pi, g_pit1, g_pit2);
-    legend('PI', 'PIT1', 'PIT2');
+    %bode(g_pi, g_pit1, g_pit2);
+    bode(g_pi);
+    %legend('PI', 'PIT1', 'PIT2');
     if printout
-        print -dpdf fig/h.pdf
+        print -dpdf fig/g.pdf
     end
+end
+if csvout
+    [magnitude_g, phase_g, angfreq_g] = bode(g_pi, f);
+    filename = 'bode_g';
+    fid = fopen([datapath, filename, fileending], 'wt');
+    fprintf(fid, 'magnitude, phase, angfreq\n');
+    fprintf(fid, '%.6f,%.6f,%.6f\n', [magnitude_g, phase_g, angfreq_g']');
+    fclose(fid);
 end
 
 % Plot transfer functions
@@ -121,6 +163,26 @@ if plotout
         print -dpdf fig/bode_pi.pdf
     end
 end
+if csvout
+    [magnitude_gh1, phase_gh1, angfreq_gh1] = bode(g_pi*h1, f);
+    [magnitude_gh2, phase_gh2, angfreq_gh2] = bode(g_pi*h2, f);
+    [magnitude_gh3, phase_gh3, angfreq_gh3] = bode(g_pi*h3, f);
+    filename = 'bode_gh1';
+    fid = fopen([datapath, filename, fileending], 'wt');
+    fprintf(fid, 'magnitude, phase, angfreq\n');
+    fprintf(fid, '%.6f,%.6f,%.6f\n', [magnitude_gh1, phase_gh1, angfreq_gh1']');
+    fclose(fid);
+    filename = 'bode_gh2';
+    fid = fopen([datapath, filename, fileending], 'wt');
+    fprintf(fid, 'magnitude, phase, angfreq\n');
+    fprintf(fid, '%.6f,%.6f,%.6f\n', [magnitude_gh2, phase_gh2, angfreq_gh2']');
+    fclose(fid);
+    filename = 'bode_gh3';
+    fid = fopen([datapath, filename, fileending], 'wt');
+    fprintf(fid, 'magnitude, phase, angfreq\n');
+    fprintf(fid, '%.6f,%.6f,%.6f\n', [magnitude_gh3, phase_gh3, angfreq_gh3']');
+    fclose(fid);
+end
 
 % Plot step response
 if plotout
@@ -130,6 +192,26 @@ if plotout
     if printout
         print -dpdf fig/step_pi.pdf
     end
+end
+if csvout
+    [y_gh1, t_step_gh1, x_step_gh1] = step(g_pi*h1 / (1 + g_pi*h1), t_step);
+    [y_gh2, t_step_gh2, x_step_gh2] = step(g_pi*h2 / (1 + g_pi*h2), t_step);
+    [y_gh3, t_step_gh3, x_step_gh3] = step(g_pi*h3 / (1 + g_pi*h3), t_step);
+    filename = 'step_gh1';
+    fid = fopen([datapath, filename, fileending], 'wt');
+    fprintf(fid, 'y, t\n');
+    fprintf(fid, '%.6f,%.6f\n', [y_gh1, t_step_gh1*1000]');
+    fclose(fid);
+    filename = 'step_gh2';
+    fid = fopen([datapath, filename, fileending], 'wt');
+    fprintf(fid, 'y, t\n');
+    fprintf(fid, '%.6f,%.6f\n', [y_gh2, t_step_gh2*1000]');
+    fclose(fid);
+    filename = 'step_gh3';
+    fid = fopen([datapath, filename, fileending], 'wt');
+    fprintf(fid, 'y, t\n');
+    fprintf(fid, '%.6f,%.6f\n', [y_gh3, t_step_gh3*1000]');
+    fclose(fid);
 end
 
 %figure()
