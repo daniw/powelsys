@@ -98,6 +98,7 @@ sympy-plots-for-*.tex/
 *.exe.stackdump
 
 # Output folder
-*/data
+#*/data
+*.csv
 */fig
 */obj

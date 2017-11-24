@@ -18,6 +18,7 @@
     grid=minor,
     grid style={dashed,gray!30},
     every axis plot/.append style={ thick},
+    legend cell align={left},
 }
 
 \begin{document}
@@ -277,6 +278,8 @@ The output voltage is equal to the capacitor voltage.
         {1 + \dfrac{L}{R \cdot (1 - D)^2} \cdot s + \dfrac{C \cdot L}{(1 - D)^2} \cdot s^2}
 \]
 
+\clearpage
+
 \begin{figure}[h!]
     \begin{subfigure}[b]{0.9\textwidth}
         \centering
@@ -287,18 +290,18 @@ The output voltage is equal to the capacitor voltage.
                 height=0.45\textwidth,
                 title=\textbf{Magnitude},
                 xlabel={$\omega [\si{\per\second}]$},
-                ylabel={$d$},
+                ylabel={$|H| \, [\si{\decibel}]$},
                 ymin=\magmin,
                 ymax=\magmax,
                 xmin=\freqmin,
                 xmax=\freqmax,
                 ]
                 \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_h1.csv};
-                \addlegendentry{$D = 0.75$};
+                \addlegendentry{$V_i = \SI{50}{\volt}$};
                 \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_h2.csv};
-                \addlegendentry{$D = 0.5$};
+                \addlegendentry{$V_i = \SI{100}{\volt}$};
                 \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_h3.csv};
-                \addlegendentry{$D = 0.25$};
+                \addlegendentry{$V_i = \SI{150}{\volt}$};
                 %\draw[] (axis cs: 20,0.5) -- (axis cs: 80,0.5);
             \end{axis}
         \end{tikzpicture}
@@ -312,18 +315,18 @@ The output voltage is equal to the capacitor voltage.
                 height=0.45\textwidth,
                 title=\textbf{Phase},
                 xlabel={$\omega [\si{\per\second}]$},
-                ylabel={$d$},
+                ylabel={$\varphi(H) \, [\si{\degree}]$},
                 ymin=\angmin,
                 ymax=\angmax,
                 xmin=\freqmin,
                 xmax=\freqmax,
                 ]
                 \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_h1.csv};
-                \addlegendentry{$D = 0.75$};
+                \addlegendentry{$V_i = \SI{50}{\volt}$};
                 \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_h2.csv};
-                \addlegendentry{$D = 0.5$};
+                \addlegendentry{$V_i = \SI{100}{\volt}$};
                 \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_h3.csv};
-                \addlegendentry{$D = 0.25$};
+                \addlegendentry{$V_i = \SI{150}{\volt}$};
                 \draw[red, dashed, thick] (axis cs: 1000,-120) -- (axis cs: 1000000,-120);
             \end{axis}
         \end{tikzpicture}
@@ -332,6 +335,13 @@ The output voltage is equal to the capacitor voltage.
     \label{fig:bode_h}
 \end{figure}
 
+\clearpage
+
+As controller a PI controller with the following parameters is chosen. The 
+parameter have been evaluated by iterating $K_P$ and $\omega_i$ so that the 
+step response shows no significant overshoot with all three evaluated input 
+voltages. 
+\[ G(s) = K_P \cdot \left(1 + \dfrac{\omega_i}{s}\right) \qquad | K_p = 9\cdot 10^{-9}, \quad \omega_i = 200 \cdot 10^{3} \si{\per\second} \]
 \begin{figure}[h!]
     \begin{subfigure}[b]{0.9\textwidth}
         \centering
@@ -342,18 +352,18 @@ The output voltage is equal to the capacitor voltage.
                 height=0.45\textwidth,
                 title=\textbf{Magnitude},
                 xlabel={$\omega [\si{\per\second}]$},
-                ylabel={$d$},
+                ylabel={$|G| \, [\si{\decibel}]$},
                 ymin=\magmin,
                 ymax=\magmax,
                 xmin=\freqmin,
                 xmax=\freqmax,
                 ]
                 \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_g.csv};
-                %\addlegendentry{$D = 0.75$};
+                %\addlegendentry{$V_i = \SI{50}{\volt}$};
                 %\addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_h2.csv};
-                %\addlegendentry{$D = 0.5$};
+                %\addlegendentry{$V_i = \SI{100}{\volt}$};
                 %\addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_h3.csv};
-                %\addlegendentry{$D = 0.25$};
+                %\addlegendentry{$V_i = \SI{150}{\volt}$};
                 %\draw[] (axis cs: 20,0.5) -- (axis cs: 80,0.5);
             \end{axis}
         \end{tikzpicture}
@@ -367,18 +377,18 @@ The output voltage is equal to the capacitor voltage.
                 height=0.45\textwidth,
                 title=\textbf{Phase},
                 xlabel={$\omega [\si{\per\second}]$},
-                ylabel={$d$},
+                ylabel={$\varphi(G) \, [\si{\degree}]$},
                 ymin=\angmin,
                 ymax=\angmax,
                 xmin=\freqmin,
                 xmax=\freqmax,
                 ]
                 \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_g.csv};
-                %\addlegendentry{$D = 0.75$};
+                %\addlegendentry{$V_i = \SI{50}{\volt}$};
                 %\addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_h2.csv};
-                %\addlegendentry{$D = 0.5$};
+                %\addlegendentry{$V_i = \SI{100}{\volt}$};
                 %\addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_h3.csv};
-                %\addlegendentry{$D = 0.25$};
+                %\addlegendentry{$V_i = \SI{150}{\volt}$};
                 %\draw[red, dashed, thick] (axis cs: 1000,-120) -- (axis cs: 1000000,-120);
             \end{axis}
         \end{tikzpicture}
@@ -386,6 +396,8 @@ The output voltage is equal to the capacitor voltage.
     \caption{Magnitude and phase of controller}
     \label{fig:bode_g}
 \end{figure}
+
+\clearpage
 
 \begin{figure}[h!]
     \begin{subfigure}[b]{0.9\textwidth}
@@ -397,18 +409,18 @@ The output voltage is equal to the capacitor voltage.
                 height=0.45\textwidth,
                 title=\textbf{Magnitude},
                 xlabel={$\omega [\si{\per\second}]$},
-                ylabel={$d$},
+                ylabel={$|G \cdot H| \, [\si{\decibel}]$},
                 ymin=\magmin,
                 ymax=\magmax,
                 xmin=\freqmin,
                 xmax=\freqmax,
                 ]
                 \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_gh1.csv};
-                \addlegendentry{$D = 0.75$};
+                \addlegendentry{$V_i = \SI{50}{\volt}$};
                 \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_gh2.csv};
-                \addlegendentry{$D = 0.5$};
+                \addlegendentry{$V_i = \SI{100}{\volt}$};
                 \addplot+[mark=none] table[x=angfreq, y=magnitude, col sep=comma]{data/bode_gh3.csv};
-                \addlegendentry{$D = 0.25$};
+                \addlegendentry{$V_i = \SI{150}{\volt}$};
                 %\draw[] (axis cs: 20,0.5) -- (axis cs: 80,0.5);
             \end{axis}
         \end{tikzpicture}
@@ -422,18 +434,18 @@ The output voltage is equal to the capacitor voltage.
                 height=0.45\textwidth,
                 title=\textbf{Phase},
                 xlabel={$\omega [\si{\per\second}]$},
-                ylabel={$d$},
+                ylabel={$\varphi(G \cdot H) \, [\si{\degree}]$},
                 ymin=\angmin,
                 ymax=\angmax,
                 xmin=\freqmin,
                 xmax=\freqmax,
                 ]
                 \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_gh1.csv};
-                \addlegendentry{$D = 0.75$};
+                \addlegendentry{$V_i = \SI{50}{\volt}$};
                 \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_gh2.csv};
-                \addlegendentry{$D = 0.5$};
+                \addlegendentry{$V_i = \SI{100}{\volt}$};
                 \addplot+[mark=none] table[x=angfreq, y=phase, col sep=comma]{data/bode_gh3.csv};
-                \addlegendentry{$D = 0.25$};
+                \addlegendentry{$V_i = \SI{150}{\volt}$};
                 \draw[red, dashed, thick] (axis cs: 1000,-120) -- (axis cs: 1000000,-120);
             \end{axis}
         \end{tikzpicture}
@@ -441,6 +453,8 @@ The output voltage is equal to the capacitor voltage.
     \caption{Magnitude and phase of open loop system}
     \label{fig:bode_gh}
 \end{figure}
+
+\clearpage
 
 \begin{figure}[h!]
     \centering
@@ -456,16 +470,28 @@ The output voltage is equal to the capacitor voltage.
             xmax=10,
             ]
             \addplot+[mark=none] table[x=t, y=y, col sep=comma]{data/step_gh1.csv};
-            \addlegendentry{$D = 0.75$};
+            \addlegendentry{$V_i = \SI{50}{\volt}$};
             \addplot+[mark=none] table[x=t, y=y, col sep=comma]{data/step_gh2.csv};
-            \addlegendentry{$D = 0.5$};
+            \addlegendentry{$V_i = \SI{100}{\volt}$};
             \addplot+[mark=none] table[x=t, y=y, col sep=comma]{data/step_gh3.csv};
-            \addlegendentry{$D = 0.25$};
+            \addlegendentry{$V_i = \SI{150}{\volt}$};
             %\draw[red, dashed, thick] (axis cs: 1000,-120) -- (axis cs: 1000000,-120);
         \end{axis}
     \end{tikzpicture}
     \caption{Step response of closed loop system}
     \label{fig:step_gh}
 \end{figure}
+
+\clearpage
+
+\appendix
+\section{Octave Code}
+All code for above calculations and plots is listed below. All scripts for 
+this attestation together with the sources for this documentation are also 
+available on \url{https://github.com/daniw/powelsys}. In order to compile the 
+documentation the script \verb!pes_att.m! has to be run with Octave or Matlab 
+to generate the data needed for the plots. 
+\lstsettingm
+\lstinputlisting{pes_att.m}
 
 \end{document}
